@@ -106,3 +106,13 @@ venv.bak/
 # data
 data/
 .idea/
+
+# tex
+*.log
+*.out
+*.spl
+*.bbl
+*.blg
+*.pdf
+*.aux
+*.synctex.gz
