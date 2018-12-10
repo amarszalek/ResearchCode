@@ -617,7 +617,7 @@ def scog(ofn, alpha):
         return f[0] if f.max() == f.min() else None
     x = ofn.branch_f.domain_x
     y2 = np.abs(g - f)
-    y1 = ((alpha * f + (1.0 - alpha) * g)) * y2
+    y1 = (alpha * f + (1.0 - alpha) * g) * y2
     return trapz(y1, x) / trapz(y2, x)
 
 

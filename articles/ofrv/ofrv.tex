@@ -1,6 +1,7 @@
 \documentclass[review]{elsarticle}
 
 \usepackage{lineno, hyperref}
+\usepackage{amssymb}
 \modulolinenumbers[5]
 
 \journal{Journal of \LaTeX\ Templates}
@@ -54,56 +55,84 @@
 \author[pk,ippt]{Tadeusz Burczy\'{n}ski}
 \ead{tburczynski@ippt.pan.pl}
 
-\author[pk]{Micha\l~Bereta}
-\ead{mbereta@pk.edu.pl}
+%\author[pk]{Micha\l~Bereta}
+%\ead{mbereta@pk.edu.pl}
 
 \address[pk]{Institute of Computer Science, Computational Intelligence Department, Cracow University of Technology, Cracow, Poland}
 \address[ippt]{Institute of Fundamental Technological Research, Polish Academy of Sciences, Warsaw, Poland}
 
 \begin{abstract}
-This template helps you to create a properly formatted \LaTeX\ manuscript.
+The concept of fuzzy random variable combines two sources of uncertainty: randomness and fuzziness, whereas the model of ordered fuzzy numbers provides representation of inaccurate quantitative data, and is an alternative to the standard fuzzy numbers model proposed by Zadeh. This paper develops the model of ordered fuzzy numbers by defining the concept of fuzzy random variables for these numbers, called further ordered fuzzy random variables. Thanks to the well-defined arithmetic of ordered fuzzy numbers (existence of neutral and opposite elements) and the introduced ordered fuzzy random variables, it becomes possible to construct fully fuzzy stochastic time series models such as e.g. the autoregressive model or the GARCH model in the form of classical equations, which can be estimation using the least-squares or the maximum likelihood method. Furthermore, the concept of normality of ordered fuzzy random variables and the method to generate pseudo-random ordered fuzzy variables  with normal distribution are introduced.
 \end{abstract}
 
 \begin{keyword}
-\texttt{elsarticle.cls}\sep \LaTeX\sep Elsevier \sep template
-\MSC[2010] 00-01\sep  99-00
+Ordered fuzzy numbers\sep Fuzzy random variables\sep Ordered fuzzy random variables\sep Normal ordered fuzzy random variable
 \end{keyword}
 
 \end{frontmatter}
 
 \linenumbers
 
-\section{The Elsevier article class}
+\section{Introduction}
 
-\paragraph{Installation} If the document class \emph{elsarticle} is not available on your computer, you can download and install the system package \emph{texlive-publishers} (Linux) or install the \LaTeX\ package \emph{elsarticle} using the package manager of your \TeX\ installation, which is typically \TeX\ Live or Mik\TeX.
 
-\paragraph{Usage} Once the package is properly installed, you can use the document class \emph{elsarticle} to create a manuscript. Please make sure that your manuscript follows the guidelines in the Guide for Authors of the relevant journal. It is not necessary to typeset your manuscript in exactly the same way as an article, unless you are submitting to a camera-ready copy (CRC) journal.
 
-\paragraph{Functionality} The Elsevier article class is based on the standard article class and supports almost all of the functionality of that class. In addition, it features commands and options to format the
-\begin{itemize}
-\item document style
-\item baselineskip
-\item front matter
-\item keywords and MSC codes
-\item theorems, definitions and proofs
-\item lables of enumerations
-\item citation style and labeling.
-\end{itemize}
+\section{Preliminaries}
 
-\section{Front matter}
+\subsection{Fuzzy random variables}
 
-The author names and affiliations could be formatted in two ways:
-\begin{enumerate}[(1)]
-\item Group the authors per affiliation.
-\item Use footnotes to indicate the affiliations.
-\end{enumerate}
-See the front matter of this document for examples. You are recommended to conform your choice to the journal you are submitting to.
+\subsection{Ordered Fuzzy Numbers (OFNs)}
+Ordered Fuzzy Numbers (called also the Kosinski's Fuzzy Numbers) introduced by Kosi\'nski et al. in series of papers \cite{kos2002,kos2003a,kos2003b,kos2004,kos2006} are defined by ordered pairs of continuous real functions defined on the interval $[0,1]$ i.e.
+\begin{equation}
+A=(f,g)\ \mathrm{with}\ f,g\colon[0,1]\to\mathbb{R}\ \mathrm{as\ continuous\ functions}. 
+\end{equation} 
 
-\section{Bibliography styles}
+Functions $f$ and $g$ are called the \emph{up} and \emph{down}-parts of the Ordered Fuzzy Number $A$, respectively. The continuity of both parts implies their images are bounded intervals, say \emph{UP} and \emph{DOWN}, respectively. In general, the functions $f$ and $g$ need not be invertible, and only continuity is required. If one assumes, however, that these functions are monotonous, i.e., invertible, and add the constant function of $x$ on the interval $[1_A^-,1_A^+]$ with the value equal to $1$, one might define the membership function
 
-There are various bibliography styles available. You can select the style of your choice in the preamble of this document. These styles are Elsevier styles based on standard styles like Harvard and Vancouver. Please use Bib\TeX\ to generate your bibliography and include DOIs whenever available.
+\begin{equation}
+\label{eq:1}
+\mu(x)=\left\{
+\begin{array}{ccl}
+f^{-1}(x) &\ \mathrm{ if }\ & x\in[f(0),f(1)],\\
+g^{-1}(x) &\ \mathrm{ if }\ & x\in[g(1),g(0)],\\
+1&\ \mathrm{ if }\ &x\in[1_A^-,1_A^+],
+\end{array}
+\right.
+\end{equation}
+if $f$ is increasing and $g$ is decreasing, and such that $f\leq g$ (pointwise). In this way, the obtained membership function $\mu(x),\ x\in\mathbb{R}$ represents a~mathematical object which resembles a~convex fuzzy number in the classical sense. The Ordered Fuzzy Number and Ordered Fuzzy Number as a~fuzzy number in classical meaning are presented in Fig.~\ref{fig:1}.
 
-Here are two sample references: \cite{Feynman1963118,Dirac1953888}.
+\begin{figure}[!ht]
+\centering
+\includegraphics[scale=0.41]{Fig1}
+\vspace{-25pt}
+\caption{Graphical interpretation of OFN and a OFN presented as fuzzy number in classical meaning}
+\label{fig:1}
+\end{figure}
+
+In addition, note that a pair of continuous functions $(f,g)$ determines different Ordered Fuzzy Number than the pair $(g,f)$. In this way, an extra feature to this object, named the orientation is appointed. Depending on the orientation, the Ordered Fuzzy Numbers can be divided into two types: a~positive orientation, if the direction of Ordered Fuzzy Number is consistent with the direction of the axis $Ox$ and a~negative orientation, if the direction of the Ordered Fuzzy Number is opposite to the direction of the axis $Ox$.
+
+Furthermore, the basic arithmetic operations on Ordered Fuzzy Numbers are defined as the pairwise operations of their elements. Let $A=(f_A,g_A)$, \linebreak $B=(f_B,g_B)$ and $C=(f_C,g_C)$ are Ordered Fuzzy Numbers. The sum \linebreak $C=A+B$, subtraction $C=A-B$, product $C= A\cdot B$, and division $C=A\div B$ are defined by formula
+\begin{equation}
+f_C(y)=f_A(y)\ast f_B(y),\qquad g_C(y)=g_A(y)\ast g_B(y)
+\end{equation}
+where $\ast$ works for $+$, $-$, $\cdot$ and $\div$, respectively, and where $C=A\div B$ is defined, if the functions $|f_B|$ and $|g_B|$ are bigger than zero. 
+
+This definition leads to some useful properties. The one of them is existence of neutral elements of addition and multiplication. This fact causes that not always the result of an arithmetic operation is a fuzzy number with a larger support. This allows to build fuzzy models based on Ordered Fuzzy Numbers in the form of the classical equations without losing the accuracy. In a similar way, basic math functions such as log, exp, sqrt etc. can be defined (see \cite{prokopowicz}).
+
+Moreover, a universe $\mathcal{O}$ of all Ordered Fuzzy Numbers can be identified with $\mathcal{C}^0([0,1])\times\mathcal{C}^0([0,1])$, hence the space $\mathcal{O}$ is topologically a Banach space \cite{kos2004}. A~class of defuzzification operators of Ordered Fuzzy Numbers can be defined, as linear and continuous functionals on the Banach space $\mathcal{O}$. Each of them has a representation by a sum of two Stieltjes integrals with respect to functions $\nu_1$ and $\nu_2$ of bounded variation \cite{kos2010}.
+
+An example of a~nonlinear functional is {\em center of gravity defuzzification} functional ($CoG$) calculated at $A=(f_A,g_A)$
+\begin{equation}
+\label{eq:cog}
+CoG(A)=\int\limits_0^1\frac{f_A(s)+g_A(s)}{2}|f_A(s)-g_A(s)|ds\{\int\limits_0^1|f_A(s)-g_A(s)|ds\}^{-1}
+\end{equation}
+provided $\int\limits_0^1|f_A(s)-g_A(s)|ds\neq0$. Center of gravity operator defined above is equivalent to the center of gravity operator in classical fuzzy logic.
+
+\section{Ordered fuzzy random variables}
+
+\section{Concept of normality of OFNs}
+
+\section{Conclusion}
 
 \section*{References}
 

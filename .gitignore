@@ -116,3 +116,4 @@ data/
 *.pdf
 *.aux
 *.synctex.gz
+*.eps
