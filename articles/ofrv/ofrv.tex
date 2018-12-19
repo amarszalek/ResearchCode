@@ -78,8 +78,10 @@ Ordered fuzzy numbers\sep Fuzzy random variables\sep Ordered fuzzy random variab
 
 
 \section{Preliminaries}
+Before proceeding to formal definitions of ordered fuzzy random variables, we first review some underlying concepts: fuzzy random variables, ordered fuzzy numbers and basic concepts of stochastic processes. Readers familiar with these topics can skip this section.
 
-\subsection{Fuzzy random variables}
+\subsection{Fuzzy random variables (FRVs)}
+
 
 \subsection{Ordered Fuzzy Numbers (OFNs)}
 Ordered Fuzzy Numbers (called also the Kosinski's Fuzzy Numbers) introduced by Kosi\'nski et al. in series of papers \cite{kos2002,kos2003a,kos2003b,kos2004,kos2006} are defined by ordered pairs of continuous real functions defined on the interval $[0,1]$ i.e.
@@ -87,7 +89,7 @@ Ordered Fuzzy Numbers (called also the Kosinski's Fuzzy Numbers) introduced by K
 A=(f,g)\ \mathrm{with}\ f,g\colon[0,1]\to\mathbb{R}\ \mathrm{as\ continuous\ functions}. 
 \end{equation} 
 
-Functions $f$ and $g$ are called the \emph{up} and \emph{down}-parts of the Ordered Fuzzy Number $A$, respectively. The continuity of both parts implies their images are bounded intervals, say \emph{UP} and \emph{DOWN}, respectively. In general, the functions $f$ and $g$ need not be invertible, and only continuity is required. If one assumes, however, that these functions are monotonous, i.e., invertible, and add the constant function of $x$ on the interval $[1_A^-,1_A^+]$ with the value equal to $1$, one might define the membership function
+Functions $f$ and $g$ are called the \emph{up} and \emph{down}-parts of the ordered fuzzy number $A$, respectively. The continuity of both parts implies their images are bounded intervals, say \emph{UP} and \emph{DOWN}, respectively. In general, the functions $f$ and $g$ need not be invertible, and only continuity is required. If one assumes, however, that these functions are monotonous, i.e., invertible, and add the constant function of $x$ on the interval $[1_A^-,1_A^+]$ with the value equal to $1$, one might define the membership function
 
 \begin{equation}
 \label{eq:1}
@@ -99,7 +101,7 @@ g^{-1}(x) &\ \mathrm{ if }\ & x\in[g(1),g(0)],\\
 \end{array}
 \right.
 \end{equation}
-if $f$ is increasing and $g$ is decreasing, and such that $f\leq g$ (pointwise). In this way, the obtained membership function $\mu(x),\ x\in\mathbb{R}$ represents a~mathematical object which resembles a~convex fuzzy number in the classical sense. The Ordered Fuzzy Number and Ordered Fuzzy Number as a~fuzzy number in classical meaning are presented in Fig.~\ref{fig:1}.
+if $f$ is increasing and $g$ is decreasing, and such that $f\leq g$ (pointwise). In this way, the obtained membership function $\mu(x),\ x\in\mathbb{R}$ represents a~mathematical object which resembles a~convex fuzzy number in the classical sense. The ordered fuzzy number and ordered fuzzy number as a~fuzzy number in classical meaning are presented in Fig.~\ref{fig:1}.
 
 \begin{figure}[!ht]
 \centering
@@ -109,28 +111,31 @@ if $f$ is increasing and $g$ is decreasing, and such that $f\leq g$ (pointwise).
 \label{fig:1}
 \end{figure}
 
-In addition, note that a pair of continuous functions $(f,g)$ determines different Ordered Fuzzy Number than the pair $(g,f)$. In this way, an extra feature to this object, named the orientation is appointed. Depending on the orientation, the Ordered Fuzzy Numbers can be divided into two types: a~positive orientation, if the direction of Ordered Fuzzy Number is consistent with the direction of the axis $Ox$ and a~negative orientation, if the direction of the Ordered Fuzzy Number is opposite to the direction of the axis $Ox$.
+In addition, note that a pair of continuous functions $(f,g)$ determines different ordered fuzzy number than the pair $(g,f)$. In this way, an extra feature to this object, named the orientation is appointed. Depending on the orientation, the ordered fuzzy numbers can be divided into two types: a~positive orientation, if the direction of ordered fuzzy number is consistent with the direction of the axis $Ox$ and a~negative orientation, if the direction of the ordered fuzzy number is opposite to the direction of the axis $Ox$.
 
-Furthermore, the basic arithmetic operations on Ordered Fuzzy Numbers are defined as the pairwise operations of their elements. Let $A=(f_A,g_A)$, \linebreak $B=(f_B,g_B)$ and $C=(f_C,g_C)$ are Ordered Fuzzy Numbers. The sum \linebreak $C=A+B$, subtraction $C=A-B$, product $C= A\cdot B$, and division $C=A\div B$ are defined by formula
+Furthermore, the basic arithmetic operations on ordered fuzzy numbers are defined as the pairwise operations of their elements. Let $A=(f_A,g_A)$, \linebreak $B=(f_B,g_B)$ and $C=(f_C,g_C)$ are ordered fuzzy numbers. The sum \linebreak $C=A+B$, subtraction $C=A-B$, product $C= A\cdot B$, and division $C=A\div B$ are defined by formula
 \begin{equation}
 f_C(y)=f_A(y)\ast f_B(y),\qquad g_C(y)=g_A(y)\ast g_B(y)
 \end{equation}
 where $\ast$ works for $+$, $-$, $\cdot$ and $\div$, respectively, and where $C=A\div B$ is defined, if the functions $|f_B|$ and $|g_B|$ are bigger than zero. 
 
-This definition leads to some useful properties. The one of them is existence of neutral elements of addition and multiplication. This fact causes that not always the result of an arithmetic operation is a fuzzy number with a larger support. This allows to build fuzzy models based on Ordered Fuzzy Numbers in the form of the classical equations without losing the accuracy. In a similar way, basic math functions such as log, exp, sqrt etc. can be defined (see \cite{prokopowicz}).
+This definition leads to some useful properties. The one of them is existence of neutral elements of addition and multiplication. This fact causes that not always the result of an arithmetic operation is a fuzzy number with a larger support. This allows to build fuzzy models based on ordered fuzzy numbers in the form of the classical equations without losing the accuracy. In a similar way, basic math functions such as log, exp, sqrt etc. can be defined (see \cite{prokopowicz}).
 
-Moreover, a universe $\mathcal{O}$ of all Ordered Fuzzy Numbers can be identified with $\mathcal{C}^0([0,1])\times\mathcal{C}^0([0,1])$, hence the space $\mathcal{O}$ is topologically a Banach space \cite{kos2004}. A~class of defuzzification operators of Ordered Fuzzy Numbers can be defined, as linear and continuous functionals on the Banach space $\mathcal{O}$. Each of them has a representation by a sum of two Stieltjes integrals with respect to functions $\nu_1$ and $\nu_2$ of bounded variation \cite{kos2010}.
+Moreover, a universe $\mathcal{O}$ of all ordered fuzzy numbers can be identified with $\mathcal{C}^0([0,1])\times\mathcal{C}^0([0,1])$, hence the space $\mathcal{O}$ is topologically a Banach space \cite{kos2004}. A~class of defuzzification operators of ordered fuzzy numbers can be defined, as linear and continuous functionals on the Banach space $\mathcal{O}$. Each of them has a~representation by a sum of two Stieltjes integrals with respect to functions $\nu_1$ and $\nu_2$ of bounded variation \cite{kos2010,kos2013}.
 
 An example of a~nonlinear functional is {\em center of gravity defuzzification} functional ($CoG$) calculated at $A=(f_A,g_A)$
 \begin{equation}
 \label{eq:cog}
-CoG(A)=\int\limits_0^1\frac{f_A(s)+g_A(s)}{2}|f_A(s)-g_A(s)|ds\{\int\limits_0^1|f_A(s)-g_A(s)|ds\}^{-1}
+CoG(A)=\frac{\int\limits_0^1\frac{f_A(s)+g_A(s)}{2}|f_A(s)-g_A(s)|ds}{\int\limits_0^1|f_A(s)-g_A(s)|ds}
 \end{equation}
 provided $\int\limits_0^1|f_A(s)-g_A(s)|ds\neq0$. Center of gravity operator defined above is equivalent to the center of gravity operator in classical fuzzy logic.
 
-\section{Ordered fuzzy random variables}
+\subsection{Stochastic processes}
 
-\section{Concept of normality of OFNs}
+
+\section{Ordered fuzzy random variables (OFRVs)}
+
+\section{Concept of normality of OFRVs}
 
 \section{Conclusion}
 
