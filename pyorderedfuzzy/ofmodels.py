@@ -84,14 +84,29 @@ class OFSeries(object):
         ax_f.hist(data_f, bins=bins, density=density, **kwargs_f)
         ax_g.hist(data_g, bins=bins, density=density, **kwargs_g)
 
-#TODO: Dokończyć
-    def plot_3d_histogram(self, ax_f, ax_g, alpha=np.linspace(0, 1, 11), bins=20, density=False, s=0, e=None, kwargs_f={}, kwargs_g={}):
+    def plot_3d_histogram(self, ax_f, ax_g, alphas=np.linspace(0, 1, 11), bins=20, density=False, s=0, e=None, kwargs_f={}, kwargs_g={}):
         if e is None:
             ofns = self[s:]
         else:
             ofns = self[s:e]
 
-
+        for a in alphas:
+            fv_f = np.vectorize(lambda x: x.branch_f(a), otypes=[np.double])
+            fv_g = np.vectorize(lambda x: x.branch_g(a), otypes=[np.double])
+            data_f = fv_f(self.values)
+            data_g = fv_g(self.values)
+            h_f, b_f = np.histogram(data_f, bins=bins, density=density)
+            b_f = (b_f[:-1] + b_f[1:]) / 2.
+            h_g, b_g = np.histogram(data_g, bins=bins, density=density)
+            b_g = (b_g[:-1] + b_g[1:]) / 2.
+            ax_f.bar(b_f, h_f, zs=a, zdir='y', alpha=0.8, **kwargs_f)
+            ax_g.bar(b_g, h_g, zs=a, zdir='y', alpha=0.8, **kwargs_g)
+            ax_f.set_xlabel('$f(\\alpha)$')
+            ax_f.set_ylabel('$\\alpha$')
+            ax_f.set_zlabel('frequency')
+            ax_g.set_xlabel('$g(\\alpha)$')
+            ax_g.set_ylabel('$\\alpha$')
+            ax_g.set_zlabel('frequency')
         
     def transform(self, method='diff'):
         arr = np.copy(self.values)
