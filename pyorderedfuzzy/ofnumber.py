@@ -339,14 +339,18 @@ class OFNumber(object):
     # to_array method
     def to_array(self, stack='vstack'):
         if stack=='vstack':
-            return np.vstack([self.branch_f.to_array(),self.branch_g.to_array()])
+            return np.vstack([self.branch_f.to_array(), self.branch_g.to_array()])
         elif stack=='hstack':
-            return np.hstack([self.branch_f.to_array(),self.branch_g.to_array()])
+            return np.hstack([self.branch_f.to_array(), self.branch_g.to_array()])
         else:
             raise ValueError('stack must be vstack or hstack')
     
     # plot method
-    def plot_ofn(self, ax, plot_as='ordered', kwargs_f={'c': 'k'}, kwargs_g={'c': 'k'}):
+    def plot_ofn(self, ax, plot_as='ordered', kwargs_f=None, kwargs_g=None):
+        if kwargs_f is None:
+            kwargs_f = {'c': 'k'}
+        if kwargs_g is None:
+            kwargs_g = {'c': 'k'}
         self.branch_f.plot_branch(ax, plot_as=plot_as, **kwargs_f)
         self.branch_g.plot_branch(ax, plot_as=plot_as, **kwargs_g)
         
@@ -410,7 +414,7 @@ class OFNumber(object):
             res.branch_g = res.branch_g * right.branch_g
         elif isscalar(right):
             res.branch_f = res.branch_f * right
-            res.branch_g = res.branch_g *  right
+            res.branch_g = res.branch_g * right
         else:
             raise ValueError('right must be instance of OFNumber class or scalar')
         return res
@@ -422,8 +426,8 @@ class OFNumber(object):
             res.branch_f = res.branch_f * left.branch_f
             res.branch_g = res.branch_g * left.branch_g
         elif isscalar(left):
-            res.branch_f = res.branch_f *  left
-            res.branch_g = res.branch_g *  left
+            res.branch_f = res.branch_f * left
+            res.branch_g = res.branch_g * left
         else:
             raise ValueError('left must be instance of OFNumber class or scalar')
         return res
