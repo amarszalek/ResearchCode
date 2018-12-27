@@ -165,7 +165,7 @@ class OFAutoRegressive(object):
 
             args = (n_coef, dim, x, y)
             if method == 'ls':
-                res = minimize(ar_fun_obj_ols, p0, args=args, method='L-BFGS-B', jac=True, options=options)
+                res = minimize(lr_fun_obj_ols, p0, args=args, method='L-BFGS-B', jac=True, options=options)
                 coef = array2ofns(res.x, n_coef, dim)
             else:
                 raise ValueError('wrong method')
@@ -221,7 +221,63 @@ class OFAutoRegressive(object):
         return OFSeries(predicted)
 
 
-def ar_fun_obj_ols(p, n_coef, dim, x, y):
+class OFLinearRegression(object):
+    def __init__(self, intercept=True):
+        super(OFLinearRegression, self).__init__()
+        self.intercept = intercept
+
+    # x, y -> np.array of OFN
+    # x.shape = (T, N), y.shape = (T,)
+    def fit(self, x, y, solver='L-BFGS-B', options=None):
+        dim = x[0, 0].branch_f.dim
+
+        # initial coef
+        n_coef = x.shape[1] + 1 if self.intercept else x.shape[1]
+        coef = ofr.ofnormal_sample(n_coef, OFNumber.init_from_scalar(0.0, dim=dim),
+                                   OFNumber.init_from_scalar(0.001, dim=dim), 1, 0.5)
+
+        if solver == 'L-BFGS-B':
+            if options is None:
+                options = {'disp': None, 'gtol': 1.0e-12, 'eps': 1e-08, 'maxiter': 1000, 'ftol': 2.22e-09}
+            p0 = np.concatenate(coef.to_array(stack='hstack'))
+            yy = np.stack(OFSeries(y).to_array(stack='hstack'))
+            xx = np.ones((len(y), n_coef, 2*dim))
+            for i in range(len(y)):
+                if self.intercept:
+                    xx[i, 1:, :] = np.stack(OFSeries(x[i]).to_array(stack='hstack'))
+                else:
+                    xx[i] = np.stack(OFSeries(x[i]).to_array(stack='hstack'))
+
+            args = (n_coef, dim, xx, yy)
+            res = minimize(lr_fun_obj_ols, p0, args=args, method='L-BFGS-B', jac=True, options=options)
+            coef = array2ofns(res.x, n_coef, dim)
+            self.coefs = OFSeries(coef)
+        else:
+            raise ValueError('wrong solver')
+
+        pred = self.predict(x)
+        self.residuals = OFSeries(y - pred.values)
+
+    def predict(self, x, error=False, er_opt=None):
+        dim = self.coefs[0].branch_f.dim
+        n = x.shape[0]
+        if error:
+            if er_opt is None:
+                er_opt = {'dist': 'ofnormal', 'mu': OFNumber.init_from_scalar(0.0, dim=dim),
+                          'sig2': OFNumber.init_from_scalar(0.0, dim=dim), 's2': 1, 'p': 0.5}
+            if er_opt['dist'] == 'ofnormal':
+                er = ofr.ofnormal_sample(n, er_opt['mu'], er_opt['sig2'], er_opt['s2'], er_opt['p'])
+        else:
+            er = OFSeries([OFNumber.init_from_scalar(0.0, dim=dim) for _ in range(n)])
+
+        if self.intercept:
+            pred = np.sum(x * self.coefs[1:], axis=1) + self.coefs[0] + er.values
+        else:
+            pred = np.sum(x * self.coefs, axis=1) + er.values
+        return OFSeries(pred)
+
+
+def lr_fun_obj_ols(p, n_coef, dim, x, y):
     coef = p.reshape((n_coef, 2 * dim))
     yp = np.sum(x*coef, axis=1)
     e = np.sum(np.power(y - yp, 2))
