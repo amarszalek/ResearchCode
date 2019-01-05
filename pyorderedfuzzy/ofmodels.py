@@ -194,6 +194,7 @@ class OFAutoRegressive(object):
             initials = deque(initials, maxlen=len(initials))
 
         dim = coefs[0].branch_f.dim
+        er = None
         if error:
             if er_opt is None:
                 er_opt = {'dist': 'ofnormal', 'mu': OFNumber.init_from_scalar(0.0, dim=dim),
@@ -261,6 +262,7 @@ class OFLinearRegression(object):
     def predict(self, x, error=False, er_opt=None):
         dim = self.coefs[0].branch_f.dim
         n = x.shape[0]
+        er = None
         if error:
             if er_opt is None:
                 er_opt = {'dist': 'ofnormal', 'mu': OFNumber.init_from_scalar(0.0, dim=dim),
@@ -281,7 +283,8 @@ def lr_fun_obj_ols(p, n_coef, dim, x, y):
     coef = p.reshape((n_coef, 2 * dim))
     yp = np.sum(x*coef, axis=1)
     e = np.sum(np.power(y - yp, 2))
-    grad = np.concatenate([np.sum(2*(y-yp)*x[:, i, :], axis=0) for i in range(x.shape[1])])
+    g = [np.sum(2*(y-yp)*x[:, i, :], axis=0) for i in range(x.shape[1])]
+    grad = np.concatenate(g)
     return e, -grad
 
 

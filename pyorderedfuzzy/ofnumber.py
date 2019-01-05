@@ -143,7 +143,7 @@ class Branch(object):
     def contains_zero(self):
         min_val = np.min(self.fvalue_y)
         max_val = np.max(self.fvalue_y)
-        return (min_val <= 0.0 <= max_val)
+        return min_val <= 0.0 <= max_val
     
     # div method left side
     def __truediv__(self, right):
@@ -338,9 +338,9 @@ class OFNumber(object):
     
     # to_array method
     def to_array(self, stack='vstack'):
-        if stack=='vstack':
+        if stack == 'vstack':
             return np.vstack([self.branch_f.to_array(), self.branch_g.to_array()])
-        elif stack=='hstack':
+        elif stack == 'hstack':
             return np.hstack([self.branch_f.to_array(), self.branch_g.to_array()])
         else:
             raise ValueError('stack must be vstack or hstack')
@@ -563,9 +563,9 @@ class OFNumber(object):
     
     # alpha-cut method
     def acut(self, alpha):
-        fmin, fmax = self.branch_f.acut(alpha)
-        gmin, gmax = self.branch_g.acut(alpha)
-        return (fmin, fmax), (gmin, gmax)
+        f_min, f_max = self.branch_f.acut(alpha)
+        g_min, g_max = self.branch_g.acut(alpha)
+        return (f_min, f_max), (g_min, g_max)
     
     # support
     def supp(self):
@@ -617,7 +617,7 @@ class OFNumber(object):
 def scog(ofn, alpha):
     f = ofn.branch_f.fvalue_y
     g = ofn.branch_g.fvalue_y
-    if (f == g).all():
+    if np.all(f == g):
         return f[0] if f.max() == f.min() else None
     x = ofn.branch_f.domain_x
     y2 = np.abs(g - f)
