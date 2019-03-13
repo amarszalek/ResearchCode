@@ -1,0 +1,35 @@
+%% Begin of file `tgtermes.sty'. 
+% This file belongs to the TeX Gyre collection of fonts. The work is released
+% under the GUST Font License. See the MANIFEST-TeX-Gyre-Termes.txt
+% and README-TeX-Gyre-Termes.txt files for the details.
+% For the most recent version of this license see
+% http://www.gust.org.pl/fonts/licenses/GUST-FONT-LICENSE.txt or
+% http://tug.org/fonts/licenses/GUST-FONT-LICENSE.txt
+%% ----------------------------------------------------------------------------
+%% [EN] LaTeX2e support for Tex Gyre Termes fonts
+%% The declaration `\usepackage{tgtermes}' in the LaTeX preamble
+%% will set TeX Gyre Termes as the default (serif) font for the document. 
+%%
+%% [PL] Wspomaga stosowanie w LaTeXu kroju Tex Gyre Termes
+%% Umieszczenie linijki `\usepackage{tgtermes}' w preambule spowoduje
+%% ustawienie TeX Gyre Termes jako podstawowego szeryfowego kroju
+%% dokumentu, czyli kroju skojarzonego z poleceniem \rmfamily.
+%% W dokumentach po polsku konieczne jest uaktywnienie kodowania
+%% T1, QX lub OT4 (najlepiej przy pomocy pakietu 'polski'). Np.:
+%%
+%% \usepackage{tgtermes}
+%% \usepackage[T1]{polski}
+%% ----------------------------------------------------------------------------
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tgtermes}
+  [2006/11/01 v1.0 TeX Gyre Termes as default roman family]
+
+\renewcommand{\rmdefault}{qtm}
+\renewcommand{\familydefault}{\rmdefault}
+\fontfamily{\familydefault}
+
+\endinput
+%% 
+%% End of file `tgtermes.sty'.
