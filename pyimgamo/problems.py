@@ -36,3 +36,54 @@ class Kursawe(Problem):
             return np.sum(-10.0 * np.exp(-0.2 * np.sqrt(solutions[:, :-1]**2 + solutions[:, 1:]**2)), axis=1)
         if i == 1:
             return np.sum(np.abs(solutions)**0.8 + 5.0 * np.sin(solutions**3), axis=1)
+
+
+class OFAR(Problem):
+    def __init__(self, nvars, nobjs, bounds, data_x, data_y, need_repair=False):
+        super(OFAR, self).__init__(nvars, nobjs, bounds, need_repair)
+        self.data_x = data_x
+        self.data_y = data_y
+
+    def evaluate_all(self, solutions):
+        n_sol = solutions.shape[0]
+        n_coef = self.data_x.shape[1]
+        dim2 = self.data_x.shape[2]
+        coef = solutions.reshape((n_sol, n_coef, dim2))
+        yp = np.array([np.sum(self.data_x * coef[i], axis=1) for i in range(n_sol)])
+
+        Q = -np.average(np.array([[self.include(x, y) for x, y in zip(self.data_y, yp[i])] for i in range(n_sol)]),
+                        axis=1)
+        V = np.zeros(n_sol)
+        return np.stack([Q, V], axis=1)
+
+    def evaluate_one(self, solutions, i):
+        n_sol = solutions.shape[0]
+        n_coef = self.data_x.shape[1]
+        dim2 = self.data_x.shape[2]
+        coef = solutions.reshape((n_sol, n_coef, dim2))
+        yp = np.array([np.sum(self.data_x * coef[i], axis=1) for i in range(n_sol)])
+        if i == 0:
+            return -np.average(np.array([[self.include(x, y) for x, y in zip(yp[i], self.data_y)]
+                                         for i in range(n_sol)]), axis=1)
+        if i == 1:
+            return np.zeros(n_sol)
+
+    @staticmethod
+    def include(x, y):
+        x_ = x.reshape((2, -1))
+        y_ = y.reshape((2, -1))
+        # order
+        zx = x_[0] <= x_[1]
+        zy = y_[0] <= y_[1]
+        if not np.all(zx == zy):
+            return 0
+        # coverage
+        f1 = np.min([y_[0], y_[1]], axis=0) <= x_[0]
+        f2 = x_[0] <= np.max([y_[0], y_[1]], axis=0)
+        g1 = np.min([y_[0], y_[1]], axis=0) <= x_[1]
+        g2 = x_[1] <= np.max([y_[0], y_[1]], axis=0)
+        r = np.all([np.all([f1, f2], axis=0), np.all([g1, g2], axis=0)], axis=0).astype(int)
+        return np.sum(r*np.linspace(1, 2, r.shape[0]))
+
+
+
