@@ -3,9 +3,11 @@
 import numpy as np
 import ofrandom as ofr
 from copy import deepcopy
-from ofnumber import OFNumber, flog
+from ofnumber import OFNumber, flog, fpower
 from scipy.optimize import minimize
 from collections import deque
+from arch import arch_model
+import pandas as pd
 
 
 class OFSeries(object):
@@ -277,6 +279,104 @@ class OFLinearRegression(object):
         else:
             pred = np.sum(x * self.coefs, axis=1) + er.values
         return OFSeries(pred)
+    
+
+class OFGARCH(object):
+    def __init__(self, order_p=1, order_q=1, tmean='zero'):
+        super(OFGARCH, self).__init__()
+        self.order_p = order_p
+        self.order_q = order_q
+        self.tmean = tmean
+
+    def fit(self, ofseries, method='pyarch', last_obs=None):
+        dim = ofseries[0].branch_f.dim
+        n = len(ofseries)
+        self.dim = dim
+        self.initials = ofseries[-self.order_p - 1:]
+
+        # initial coef
+        n_coef = self.order_p +self.order_q + 2 if self.tmean == 'constant' else self.order_p + self.order_q + 1
+        coef = ofr.ofnormal_sample(n_coef, OFNumber.init_from_scalar(0.0, dim=dim),
+                                   OFNumber.init_from_scalar(0.001, dim=dim), 1, 0.5)
+        self.coefs = deepcopy(coef)
+        self.residuals = deepcopy(ofseries)
+        if method == 'pyarch':
+            # branch f
+            self.models_f = []
+            for i in range(self.dim):
+                data = np.array([ofseries[t].branch_f.fvalue_y[i] for t in range(n)])
+                data = pd.Series(data)
+                garch = arch_model(data, mean=self.tmean, p=self.order_p, q=self.order_q)
+                res = garch.fit(disp='off', last_obs=last_obs)
+                self.models_f.append(res)
+                for c in range(n_coef):
+                    self.coefs[c].branch_f.fvalue_y[i] = res.params[c]
+                for c in range(n):
+                    self.residuals[c].branch_f.fvalue_y[i] = res.resid[c]
+            # branch g
+            self.models_g = []
+            for i in range(self.dim):
+                data = np.array([ofseries[t].branch_g.fvalue_y[i] for t in range(n)])
+                data = pd.Series(data)
+                garch = arch_model(data, mean=self.tmean, p=self.order_p, q=self.order_q)
+                res = garch.fit(disp='off', last_obs=last_obs)
+                self.models_g.append(res)
+                for c in range(n_coef):
+                    self.coefs[c].branch_g.fvalue_y[i] = res.params[c]
+                for c in range(n):
+                    self.residuals[c].branch_g.fvalue_y[i] = res.resid[c]
+        else:
+            raise ValueError('wrong method')
+
+    def predict(self, n, coefs=None, initials=None, error=False, er_opt=None, method='pyarch'):
+        if coefs is None:
+            if hasattr(self, 'coefs'):
+                coefs = deepcopy(self.coefs)
+            else:
+                raise ValueError('No attribute coefs')
+        if initials is None:
+            if hasattr(self, 'initials'):
+                initials = deque(deepcopy(self.initials), maxlen=len(self.initials))
+            else:
+                raise ValueError('No attribute initials')
+        else:
+            initials = deque(initials, maxlen=len(initials))
+
+        er = None
+        if error:
+            if er_opt is None:
+                er_opt = {'dist': 'ofnormal', 'mu': OFNumber.init_from_scalar(0.0, dim=self.dim),
+                          'sig2': OFNumber.init_from_scalar(0.0, dim=self.dim), 's2': 1, 'p': 0.5}
+            if er_opt['dist'] == 'ofnormal':
+                er = ofr.ofnormal_sample(n, er_opt['mu'], er_opt['sig2'], er_opt['s2'], er_opt['p'])
+        else:
+            er = OFSeries([OFNumber.init_from_scalar(1.0, dim=self.dim) for _ in range(n)])
+
+        ofmean = np.array([OFNumber(np.zeros(self.dim), np.zeros(self.dim)) for _ in range(n)], dtype=object)
+        ofvar = np.array([OFNumber(np.zeros(self.dim), np.zeros(self.dim)) for _ in range(n)], dtype=object)
+        predicted = None
+        if method == 'pyarch':
+            for i in range(self.dim):
+                forecasts = self.models_f[i].forecast(horizon=n, align='origin')
+                mean = forecasts.mean.values[-1]
+                var = forecasts.variance.values[-1]
+                for t in range(n):
+                    ofmean[t].branch_f.fvalue_y[i] = mean[t]
+                    ofvar[t].branch_f.fvalue_y[i] = var[t]
+
+            for i in range(self.dim):
+                forecasts = self.models_g[i].forecast(horizon=n, align='origin')
+                mean = forecasts.mean.values[-1]
+                var = forecasts.variance.values[-1]
+                for t in range(n):
+                    ofmean[t].branch_g.fvalue_y[i] = mean[t]
+                    ofvar[t].branch_g.fvalue_y[i] = var[t]
+
+            predicted = deepcopy(ofmean)
+            for t in range(n):
+                predicted[t] = predicted[t] + fpower(ofvar[t], 0.5) * er[t]
+
+        return OFSeries(ofmean), OFSeries(ofvar), OFSeries(predicted), er
 
 
 def lr_fun_obj_ols(p, n_coef, dim, x, y):
@@ -295,3 +395,4 @@ def array2ofns(arr, n, dim):
         s2 = nc*2*dim + dim
         ofns.append(OFNumber(arr[s1:s2], arr[s2:s2+dim]))
     return np.array(ofns, dtype=object)
+
