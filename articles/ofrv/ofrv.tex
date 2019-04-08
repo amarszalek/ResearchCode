@@ -2,6 +2,12 @@
 
 \usepackage{lineno, hyperref}
 \usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{theorem}
+\newtheorem{theorem}{Theorem}[section]
 \modulolinenumbers[5]
 
 \journal{Journal of \LaTeX\ Templates}
@@ -81,7 +87,7 @@ Ordered fuzzy numbers\sep Fuzzy random variables\sep Ordered fuzzy random variab
 Before proceeding to formal definitions of ordered fuzzy random variables, we first review some underlying concepts: fuzzy random variables, ordered fuzzy numbers and basic concepts of stochastic processes. Readers familiar with these topics can skip this section.
 
 \subsection{Fuzzy random variables (FRVs)}
-
+\label{sec:frv}
 
 \subsection{Ordered Fuzzy Numbers (OFNs)}
 Ordered Fuzzy Numbers (called also the Kosinski's Fuzzy Numbers) introduced by Kosi\'nski et al. in series of papers \cite{kos2002,kos2003a,kos2003b,kos2004,kos2006} are defined by ordered pairs of continuous real functions defined on the interval $[0,1]$ i.e.
@@ -132,9 +138,77 @@ CoG(A)=\frac{\int\limits_0^1\frac{f_A(s)+g_A(s)}{2}|f_A(s)-g_A(s)|ds}{\int\limit
 provided $\int\limits_0^1|f_A(s)-g_A(s)|ds\neq0$. Center of gravity operator defined above is equivalent to the center of gravity operator in classical fuzzy logic.
 
 \subsection{Stochastic processes}
+A stochastic process is defined as a collection of real-valued random  variables defined on a  common  probability  space $(\Omega, \mathcal{F}, P)$, which can be written as $\{X_t\colon t\in\mathcal{T}\}$, where $\Omega$ is  a  sample  space, $\mathcal{F}$ is a $\sigma$-algebra, and $P$ is a probability measure, and the random variables, indexed by some set $\mathcal{T}$. The set $\mathcal{T}$ is called the index set  or parameter set of the stochastic process. If the set $\mathcal{T}$ is a set of natural numbers, the process is called a discrete stochastic process. However, if $\mathcal{T}$ is a subset of the set $[0, \infty] \subset\mathbb{R}$ then process it is called a continuous stochastic process. Any stochastic process can be considered as a function of two arguments $t$ and $\omega$. In such a way that for each determined $t\in\mathcal{T}$ function $\omega\to X_t(\omega)$ is a real-valued random variable. However, for each fixed $\omega \in \Omega$ function $t\to X_t(\omega)$ is a deterministic function with real values. This function it is called the realization, trajectories or sample function of the stochastic process.\cite{florescu2014, Minier2014, GABBIANI2017}
 
+\begin{definition}
+The stochastic process $\{X_t\colon t\in\mathcal{T}\}$ is called the {\it second order stochastic process}, if for every $t\in\mathcal{T}$ the expected value of random variable $X_t^2$ exists and is finite (i.e. $\mathbb{E}[X_t^2]<\infty$).
+\end{definition}
+
+\begin{definition}
+The {\it expected value} of the second order stochastic process $\{X_t\colon t\in\mathcal{T}\}$ is defined as the function $m_X\colon\mathcal{T} \to\mathbb{R}$ such that for every $t\in\mathcal{T}$
+\begin{equation}
+m_X(t) = \mathbb{E}[X_t] = \int\limits_{\Omega}X_t(\omega)P(d\omega).
+\end{equation}
+\end{definition}
+
+\begin{definition}
+The {\it variance} of the second order stochastic process \linebreak $\{X_t\colon t\in\mathcal{T}\}$ is defined as the function $\mathrm{var}_X\colon\mathcal{T}\to\mathbb{R}$ such that for every $t\in\mathcal{T}$
+\begin{equation}
+\mathrm{var}_X(t) = \mathrm{Var}[X_t] = \mathbb{E}[(X_t-m_X(t))^2].
+\end{equation}
+\end{definition}
 
 \section{Ordered fuzzy random variables (OFRVs)}
+Among the three cited definitions of fuzzy random variables in section \ref{sec:frv}, the definition proposed by Kwakernaak seems to be the most natural and the simplest in the adaptation for ordered fuzzy numbers. In this definition, for each $\alpha\in [0, 1]$, the ends of $\alpha$-cuts are identified with real-valued random variables. In case of ordered fuzzy number the ends of $\alpha$-cuts correspond to the values of functions $f(x)$ and $g(x)$, for $x = \alpha$. Hence, the ordered fuzzy random variable could be defined as the mapping from the probabilistic space into a set of all ordered fuzzy numbers, such that for each $x\in [0, 1]$, $f(x)$ and $g(x)$ are real-valued random variables. However, such a definition is very general and does not specify any relations between random variables for different values of the $x$ argument. For this reason, and because the ordered fuzzy number is an ordered pair of continuous functions, the first author in his dissertation thesis proposed definition of ordered fuzzy random variable as an ordered pair of continuous stochastic processes \cite{marszalek2017}.
+
+Let $(\Omega, \mathcal{A}, P)$ be the specified probabilistic space and let $ mathcal{O}$ be the universe of all ordered fuzzy numbers.
+
+\begin{definition}
+{\it Ordered fuzzy random variable} is defined  as mapping  $\tilde{\xi} \colon \Omega \to \mathcal {O}$ such that $ \tilde{\xi}(\omega) = \left(f_{\tilde{\xi}}(t, \omega), g_{\tilde{\xi}}(t, \omega)\right)$ is an ordered pair of continuous stochastic processes, where $f_{\tilde{\xi}}, g_{\tilde{\xi}} \colon \mathcal{T}\times \Omega \to \mathbb{R}$, $ \mathcal{T} = [0,1] \subset \mathbb{R}$. In addition, we assume that these processes are second order stochastic processes.
+\end{definition}
+
+As can be notice, for every fixed $ t \in [0,1] $ function $ t \to \left(f_{\tilde{\xi}} (t, \omega), g_{\tilde{\xi}} (t, \omega) \right) $ is a random variable with values in $ \mathbb{R}^2 $ (random vector), and for each fixed $ \omega \in \Omega $ values of function $ \omega \to \left(f_{\tilde {\xi}} (t, \omega), g_{\tilde{\xi}} (t, \omega) \right) $ are ordered fuzzy numbers whose functions $f$ and $g$ are determined by the trajectories of stochastic processes.
+
+For such defined ordered fuzzy random variables, terms such as expected value and variance can be defined as follows.
+
+\begin{definition}
+{\it The fuzzy expected value} of ordered fuzzy random variable $\tilde{\xi}\colon\Omega\to\mathcal{O}$ is defined as ordered fuzzy number $\mathbb{E}[\tilde{\xi}]$ such that
+\begin{equation}
+\mathbb{E}[\tilde{\xi}]=\left(f_{m_{\tilde{\xi}}}, g_{m_{\tilde{\xi}}} \right),
+\end{equation} 
+where functions $f_{m_{\tilde{\xi}}}$ and $g_{m_{\tilde{\xi}}}$ are the expected values of stochastic processes $f_{\tilde{\xi}}$ and $g_{\tilde{\xi}}$, respectively.
+\end{definition}
+
+\begin{definition}
+{\it The fuzzy variance} of ordered fuzzy random variable $\tilde{\xi}\colon\Omega\to\mathcal{O}$ is defined as ordered fuzzy number $\mathrm{Var}[\tilde{\xi}]$ such that
+\begin{equation}
+\mathrm{Var}[\tilde{\xi}]=\left(f_{var_{\tilde{\xi}}}, g_{var_{\tilde{\xi}}} \right),
+\end{equation}
+where functions $f_{var_{\tilde{\xi}}}$ and $g_{var_{\tilde{\xi}}}$ are the variances of stochastic processes $f_{\tilde{\xi}}$ and $g_{\tilde{\xi}}$, respectively.
+\end{definition}
+
+It is worth notice that thanks to such definitions, basic properties of the expected value and variance are maintained.
+
+\begin{theorem}
+Suppose that exist fuzzy expected values $ \mathbb{E}[\tilde{\xi}] $ and $ \mathbb{E}[\tilde{\eta}]$ of ordered fuzzy random variables $ \tilde{\xi}$ and $ \tilde{\eta} $. Then
+\begin{description}
+\item[$(i)$] If $\tilde{\xi}\geq 0$, then $\mathbb{E}[\tilde{\xi}]\geq 0$.
+\item[$(ii)$] $|\mathbb{E}[\tilde{\xi}]|\leq \mathbb{E}[|\tilde{\xi}|]$.
+\item[$(iii)$] For $a,b\in\mathbb{R}$ fuzzy expected value of ordered fuzzy random variable $a\tilde{\xi}+b\tilde{\eta}$ exist and
+$$\mathbb{E}[a\tilde{\xi}+b\tilde{\eta}]=a\mathbb{E}[\tilde{\xi}]+b\mathbb{E}[\tilde{\eta}].$$
+\end{description}
+\end{theorem}
+
+\begin{theorem}
+Let $\tilde{\xi}$ be ordered fuzzy random variable, for which exist fuzzy variance $\mathrm{Var}[\tilde{\xi}]$. Then
+\begin{description}
+\item[$(i)$] $\mathrm{Var}[\tilde{\xi}]\geq 0$.
+\item[$(ii)$] For $c\in\mathbb{R}$ $\mathrm{Var}[c\tilde{\xi}]=c^2\mathrm{Var}[\tilde{\xi}]$.
+\item[$(iii)$] For $c\in\mathbb{R}$ $\mathrm{Var}[\tilde{\xi} + c]=\mathrm{Var}[\tilde{\xi}]$.
+\end{description} 
+\end{theorem}
+
+Proofs of the above properties follow directly from the properties of the expected value and the variance of classical real-valued random variables because for each $t\in[0,1]$ $f_{m_{\tilde{\xi}}}(t)$ and $g_{m_{\tilde{\xi}}}(t)$ are real-valued random variables. Proof of the above properties for real-valued random variables can be found in many books on the theory of probability, for example in \cite{prob2003}.
 
 \section{Concept of normality of OFRVs}
 
