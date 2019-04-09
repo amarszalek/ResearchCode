@@ -5,10 +5,18 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 \theoremstyle{definition}
-\newtheorem{definition}{Definition}[section]
+\newtheorem{definition}{Definition}
 \theoremstyle{theorem}
-\newtheorem{theorem}{Theorem}[section]
+\newtheorem{theorem}{Theorem}
 \modulolinenumbers[5]
+
+\DeclareMathOperator*{\dom}{d\omega}
+\DeclareMathOperator*{\ds}{ds}
+\DeclareMathOperator*{\E}{E}
+\DeclareMathOperator*{\Pos}{Pos}
+\DeclareMathOperator*{\Cr}{Cr}
+\DeclareMathOperator*{\dr}{dr}
+\DeclareMathOperator*{\dt}{dt}
 
 \journal{Journal of \LaTeX\ Templates}
 
@@ -89,6 +97,20 @@ Before proceeding to formal definitions of ordered fuzzy random variables, we fi
 \subsection{Fuzzy random variables (FRVs)}
 \label{sec:frv}
 
+
+\begin{definition}
+\label{def:owo}
+{\it Operatorem wartości oczekiwanej} zmiennej rozmytej $\tilde{a}$ nazywamy liczbę rzeczywistą $E(\tilde{a})$ taką, że
+\begin{equation}
+E(\tilde{a})=\int\limits_0^{\infty}\Cr\{\tilde{a}\geq r\}\dr - \int\limits_{-\infty}^0\Cr\{\tilde{a}\leq r\}\dr,
+\end{equation}
+pod warunkiem, że co najmniej jedna z całek jest skończona, gdzie $\Cr\{\tilde{a}\leq r\}$ jest miarą wiarygodności (ang. credibility measure) taką, że
+\begin{equation}
+\label{eq:cr}
+\Cr\{\tilde{a}\leq r\}=1-\Cr\{\tilde{a}\geq r\} = \frac{1}{2}\left(\sup\limits_{x\leq r}\mu_{\tilde{a}}(x) + 1 - \sup\limits_{x\geq r}\mu_{\tilde{a}}(x)\right).
+\end{equation}
+\end{definition}   
+
 \subsection{Ordered Fuzzy Numbers (OFNs)}
 Ordered Fuzzy Numbers (called also the Kosinski's Fuzzy Numbers) introduced by Kosi\'nski et al. in series of papers \cite{kos2002,kos2003a,kos2003b,kos2004,kos2006} are defined by ordered pairs of continuous real functions defined on the interval $[0,1]$ i.e.
 \begin{equation}
@@ -111,8 +133,7 @@ if $f$ is increasing and $g$ is decreasing, and such that $f\leq g$ (pointwise).
 
 \begin{figure}[!ht]
 \centering
-%\includegraphics[scale=0.41]{Fig1}
-%%
+\includegraphics[scale=0.41]{Fig1}
 \vspace{-25pt}
 \caption{Graphical interpretation of OFN and a OFN presented as fuzzy number in classical meaning}
 \label{fig:1}
@@ -133,9 +154,27 @@ Moreover, a universe $\mathcal{O}$ of all ordered fuzzy numbers can be identifie
 An example of a~nonlinear functional is {\em center of gravity defuzzification} functional ($CoG$) calculated at $A=(f_A,g_A)$
 \begin{equation}
 \label{eq:cog}
-CoG(A)=\frac{\int\limits_0^1\frac{f_A(s)+g_A(s)}{2}|f_A(s)-g_A(s)|ds}{\int\limits_0^1|f_A(s)-g_A(s)|ds}
+CoG(A)=\frac{\int\limits_0^1\frac{f_A(s)+g_A(s)}{2}|f_A(s)-g_A(s)|\ds}{\int\limits_0^1|f_A(s)-g_A(s)|\ds}
 \end{equation}
-provided $\int\limits_0^1|f_A(s)-g_A(s)|ds\neq0$. Center of gravity operator defined above is equivalent to the center of gravity operator in classical fuzzy logic.
+provided $\int\limits_0^1|f_A(s)-g_A(s)|\ds\neq0$. Center of gravity operator defined above is equivalent to the center of gravity operator in classical fuzzy logic.
+
+In order to uniquely identify the orientation  of ordered fuzzy number, the following order operator is proposed.
+
+\begin{definition}
+Let $\mathcal{O}$ be universe of all ordered fuzzy nymbers. {\it Order operator} is defined as mapping $Ord\colon \mathcal{O}\to\{-1,0,1\}$, such that
+\begin{equation}
+\label{eq:os}
+Ord(A)=\left\{
+\begin{array}{cll}
+1 & \text{if} & Defuzzy(A)>f_A(0),\\
+0 & \text{if} & Defuzzy(A)=f_A(0)\ \text{or}\ Defuzzy(A)\ \text{not exist},\\
+-1& \text{if} & Defuzzy(A)<f_A(0),
+\end{array}
+\right.
+\end{equation}
+where $Defuzzy(A)$ is a fixed defuzzification operator for the ordered fuzzy number $ A = (f_A, g_A) $ e.g. the center of gravity operator defined by the formula \eqref{eq:cog}. The numbers $ -1, 1, 0 $ indicate the negative, positive and lack of orientation, respectively.
+\end{definition}
+
 
 \subsection{Stochastic processes}
 A stochastic process is defined as a collection of real-valued random  variables defined on a  common  probability  space $(\Omega, \mathcal{F}, P)$, which can be written as $\{X_t\colon t\in\mathcal{T}\}$, where $\Omega$ is  a  sample  space, $\mathcal{F}$ is a $\sigma$-algebra, and $P$ is a probability measure, and the random variables, indexed by some set $\mathcal{T}$. The set $\mathcal{T}$ is called the index set  or parameter set of the stochastic process. If the set $\mathcal{T}$ is a set of natural numbers, the process is called a discrete stochastic process. However, if $\mathcal{T}$ is a subset of the set $[0, \infty] \subset\mathbb{R}$ then process it is called a continuous stochastic process. Any stochastic process can be considered as a function of two arguments $t$ and $\omega$. In such a way that for each determined $t\in\mathcal{T}$ function $\omega\to X_t(\omega)$ is a real-valued random variable. However, for each fixed $\omega \in \Omega$ function $t\to X_t(\omega)$ is a deterministic function with real values. This function it is called the realization, trajectories or sample function of the stochastic process.\cite{florescu2014, Minier2014, GABBIANI2017}
@@ -147,7 +186,8 @@ The stochastic process $\{X_t\colon t\in\mathcal{T}\}$ is called the {\it second
 \begin{definition}
 The {\it expected value} of the second order stochastic process $\{X_t\colon t\in\mathcal{T}\}$ is defined as the function $m_X\colon\mathcal{T} \to\mathbb{R}$ such that for every $t\in\mathcal{T}$
 \begin{equation}
-m_X(t) = \mathbb{E}[X_t] = \int\limits_{\Omega}X_t(\omega)P(d\omega).
+\label{eq:13}
+m_X(t) = \mathbb{E}[X_t] = \int\limits_{\Omega}X_t(\omega)P(\dom).
 \end{equation}
 \end{definition}
 
@@ -210,7 +250,137 @@ Let $\tilde{\xi}$ be ordered fuzzy random variable, for which exist fuzzy varian
 
 Proofs of the above properties follow directly from the properties of the expected value and the variance of classical real-valued random variables because for each $t\in[0,1]$ $f_{m_{\tilde{\xi}}}(t)$ and $g_{m_{\tilde{\xi}}}(t)$ are real-valued random variables. Proof of the above properties for real-valued random variables can be found in many books on the theory of probability, for example in \cite{prob2003}.
 
+As it was noticed by Liu and Liu, in practical issues, the concept of the expected value is often required as a crisp number rather than a fuzzy number, so that it will be possible to indicate the value on the basis of which various decisions will be made. Similarly to the approach proposed by Liu and Liu, the definitions of the crisp expectation value and variance for orderd fuzzy random variables using the defuzzification operator, defined as the expected value operator, will be introduced.
+
+\begin{definition}
+{\it Expected value operator} for the ordered fuzzy number \linebreak $ A = (f_A, g_A) $ is defined as the defuzzification operator $ \E \colon \mathcal{O} \to \mathbb{R} $ specified by the formula
+\begin{equation}
+\E(A)=\E(f_A,g_A)=\frac{1}{2}\int\limits_0^1[f_A(s)+g_A(s)]\ds.
+\end{equation}  
+\end{definition}
+
+The expected value operator defined above is equivalent to the expected value operator defined by Liu and Liu (see Def. \ref{def:owo}). This equivalence is determined by the following theorem.
+
+\begin{theorem}
+Let $A=(f,g)$ be ordered fuzzy number such that exist inverse functions $f^{-1}$, $g^{-1}$ and $f(0)\leq f(1)\leq g(1)\leq g(0)$. Which means that the ordered fuzzy number $ A $ can be represented as a classic convex fuzzy number $ A^* $ with membership function $ \mu_{A^*} \colon \mathbb{R} \to [0,1] $ as follows
+\begin{equation}
+\mu_{A^*}(x)=\left\{
+\begin{array}{ll}
+f^{-1}(x) &\text{if}\quad x\in [f(0),f(1)],\\
+g^{-1}(x) &\text{if}\quad x\in [g(1),g(0)],\\
+1 & \text{if}\quad x\in [f(1),g(1)],\\
+0 & \text{otherwise.}
+\end{array}
+\right.
+\end{equation}
+Then the following equality is fulfilled
+\begin{equation}
+\label{eq:tw}
+E(A^*)=\E(A),
+\end{equation}
+where $E$ is the operator of the expected value according to the definition \ref{def:owo}.   
+\end{theorem}
+
+\begin{proof}
+According to the equation \eqref{eq:cr} the credibility measure for the fuzzy number $A^*$ is given by the formula
+\begin{equation}
+\label{eq:20}
+\Cr\{A^*\geq t\}=\left\{
+\begin{array}{cl}
+1 &\text{if}\quad t < f(0),\\
+1-\frac{1}{2}f^{-1}(t)&\text{if}\quad t\in [f(0),f(1)],\\
+\frac{1}{2} &\text{if}\quad t\in [f(1),g(1)],\\
+\frac{1}{2}g^{-1}(t) &\text{if}\quad t\in [g(1),g(0)],\\
+0 &\text{if}\quad t > g(0).
+\end{array}
+\right.
+\end{equation}
+By definition, \ref{def:owo} the expected value operator of the fuzzy number $ A^* $ is given by the formula
+\begin{equation}
+E(A^*)=\int\limits_0^{\infty}\Cr\{A^*\geq t\}\dt - \int\limits_{-\infty}^0\Cr\{A^*\leq t\}\dt.
+\end{equation}
+Using the \eqref{eq:cr} formula and the integral property we get
+\begin{equation}
+\label{eq:22}
+E(A^*)=\int\limits_{-\infty}^{\infty}\Cr\{A^*\geq t\}\dt - \int\limits_{-\infty}^01\dt.
+\end{equation}
+Then by inserting the formula \eqref{eq:20} into the equation \eqref{eq:22}, using the linearity of the integral, and then grouping the appropriate integrals, we get
+\begin{align}
+&E(A^*)= I_1 + I_2,\ \text{where} \nonumber\\
+&I_1 = \int\limits_{-\infty}^{f(0)}1\dt+\int\limits_{f(0)}^{f(1)}1\dt+\frac{1}{2}\int\limits_{f(1)}^{g(1)}1\dt-\int\limits_{-\infty}^01\dt,\\
+&I_2 = -\frac{1}{2}\left[\int\limits_{f(0)}^{f(1)}f^{-1}(t)\dt+\int\limits_{g(0)}^{g(1)}g^{-1}(t)\dt \right].
+\end{align}  
+The expression $I_1$, regardless of the location of the point $0$ relative to the points $f(0), f(1)$ and $g(1) $ is
+\begin{equation}
+I_1=\frac{1}{2}[f(1)+g(1)].
+\end{equation}
+The expression $I_2$, by substitution of appropriate integrals $s=f^{-1}(t)$ and $ s=g^{-1}(t) $, and then applying the integration by parts for both integrals is reduced to following expression
+\begin{equation}
+I_2 = -\frac{1}{2}[f(1)+g(1)] + \frac{1}{2}\int\limits_0^1[f(s)+g(s)]\ds.
+\end{equation}  
+Finally, adding up the terms $I_1$ and $I_2$ we get the right side of the equation \eqref{eq:tw}.
+\end{proof}
+
+\begin{definition}
+\label{def:owo1}
+The {\it crisp expected value} of the ordered fuzzy random variable $ \tilde{\xi} \colon \Omega \to \mathcal{O} $, for which existe a fuzzy expected value $ \mathbb{E}[\tilde{\xi}] $, is defined as the real number $\mathcal{E}(\tilde{\xi})$ such that
+\begin{equation}
+\label{eq:27}
+\mathcal{E}(\tilde{\xi})=\E(\mathbb{E}[\tilde{\xi}])=\frac{1}{2}\int\limits_0^1[f_{m_{\tilde{\xi}}}(t)+g_{m_{\tilde{\xi}}}(t)]\dt.
+\end{equation}
+\end{definition}
+
+The crisp expected value of the ordered fuzzy random variable can be calculated in two ways. Simply by definition, i.e. calculate the fuzzy expected value, and then defuzzy it with the expected value operator. We can also do the opposite, i.e. for fixed $\omega$ calculate the  crisp values of ordered fuzzy numbers $\tilde{\xi}(\omega)$. Then $\E(\tilde{\xi}(\omega))$ is a real-valued random variable, so we can count its expected value in the classic sense. The following theorem shows the equality of both methods.
+
+\begin{theorem}
+Let $\tilde{\xi} $ be an ordered  fuzzy random variable specified on the probabilistic space $(\Omega, \mathcal{F}, P)$. Then if exist  $\mathbb{E}[\tilde{\xi}]$, then
+\begin{equation}
+\label{eq:t1}
+\E(\mathbb{E}[\tilde{\xi}])=\mathbb{E}[\E(\tilde{\xi})],
+\end{equation}
+where $\mathbb{E}$ on the right side of the equation \eqref{eq:t1} means the expected value of a classic real-valued random variable. 
+\end{theorem}
+
+\begin{proof}
+According to the formula \eqref{eq:27}, using the formula \eqref{eq:13}, from the integral property and from the Fubini's theorem about iterated integrals we get
+\begin{align}
+\E(\mathbb{E}[\tilde{\xi}])&=\frac{1}{2}\int\limits_0^1[f_{m_{\tilde{\xi}}}(t)+g_{m_{\tilde{\xi}}}(t)]\dt=\int\limits_0^1\frac{1}{2}f_{m_{\tilde{\xi}}}(t)\dt + \int\limits_0^1\frac{1}{2}g_{m_{\tilde{\xi}}}(t)\dt\nonumber\\
+&=\int\limits_0^1\mathbb{E}\left[\frac{1}{2}f_{\tilde{\xi}}(t)\right]\dt + \int\limits_0^1\mathbb{E}\left[\frac{1}{2}g_{\tilde{\xi}}(t)\right]\dt\nonumber\\
+&=\int\limits_0^1\left[\int\limits_{\Omega}\frac{1}{2}f_{\tilde{\xi}}(t,\omega)P(\dom)\right]\dt + \int\limits_0^1\left[\int\limits_{\Omega}\frac{1}{2}g_{\tilde{\xi}}(t,\omega)P(\dom)\right]\dt\nonumber\\
+&=\int\limits_{\Omega}\left[\frac{1}{2}\int\limits_0^1f_{\tilde{\xi}}(t,\omega)\dt+\frac{1}{2}\int\limits_0^1g_{\tilde{\xi}}(t,\omega)\dt\right]P(\dom)\nonumber\\
+&=\mathbb{E}\left[\frac{1}{2}\int\limits_0^1[f_{\tilde{\xi}}(t)+g_{\tilde{\xi}}(t)]\dt\right]=\mathbb{E}[\E(\tilde{\xi})]\nonumber.
+\end{align}
+\end{proof}
+
+The crisp variance of the ordered fuzzy random variable is defined as the variance of the classical real-valued random variable which is created by defuzzy ordered fuzzy random variable. Thus, it is the mean square of deviation of the defuzzy values from the crisp expected value. 
+
+\begin{definition}
+\label{def:owar}
+The {\it crisp variance} of the ordered fuzzy random variable \linebreak $\tilde{\xi}\colon\Omega\to\mathcal{O}$, for which $\mathcal{E}[\tilde{\xi}]$ exists, is defined as real number $\mathcal{V}(\tilde{\xi})$ such that
+\begin{equation}
+\mathcal{V}(\tilde{\xi})=\mathrm{Var}[\E(\tilde{\xi})]=\mathbb{E}\left[\left(\E(\tilde{\xi})-\mathcal{E}(\tilde{\xi})\right)^2\right],
+\end{equation}
+where $\mathbb{E}$ and $\mathrm{Var}$ mean the expected value and the variance in the classic sense. 
+\end{definition}
+
 \section{Concept of normality of OFRVs}
+From the point of view of empirical issues, the most important issue is the ability to study and generate random numbers with given probability distributions. As like the concept of a fuzzy random variable is defined by considering appropriately defined classic random variables, so defining the probability distribution of fuzzy random variable is limited to determining the distributions of these random variables \cite{puri1985,wu2009,gil2006,colubi2002,colubi2007}.
+
+In this article, a definition of a normal probability distribution for an ordered fuzzy random variable is presented. However, unlike the classic convex fuzzy numbers, ordered fuzzy numbers have additional property, namely the orientation, which should also be taken into account.
+
+Let $\tilde{\xi}$ be an ordered fuzzy random variable specified on probability space $(\Omega,\mathcal{F},P)$.
+
+\begin{definition}
+An ordered fuzzy random variable $\tilde{\xi}$ has {\it normal distrubution with parameters $\tilde{\mu}, \tilde{\sigma}^2\in\mathcal{O}$, $\sigma^2\in\mathbb{R}$ and $p\in [0,1]$} such that $Ord(\tilde{\mu})\geq 0$, $\tilde{\sigma}^2+\sigma^2>0$, what is denoted as $\tilde{\xi}\sim \mathcal{N}(\tilde{\mu},\tilde{\sigma}^2,\sigma^2,p)$, if for each  $t\in[0,1]$ real-valued random variables $f_{\tilde{\xi}}(t)$ and $g_{\tilde{\xi}}(t)$ have following mixed normal distrubutions
+\begin{align}
+&f_{\tilde{\xi}}(t)\sim p\cdot \mathcal{N}\left(f_{\tilde{\mu}}(t),f_{\tilde{\sigma}^2}(t)+\sigma^2\right)+(1-p)\cdot \mathcal{N}\left(g_{\tilde{\mu}}(t),g_{\tilde{\sigma}^2}(t)+\sigma^2\right)\nonumber\\
+&g_{\tilde{\xi}}(t)\sim p\cdot \mathcal{N}\left(g_{\tilde{\mu}}(t),g_{\tilde{\sigma}^2}(t)+\sigma^2\right)+(1-p)\cdot \mathcal{N}\left(f_{\tilde{\mu}}(t),f_{\tilde{\sigma}^2}(t)+\sigma^2\right).\nonumber
+\end{align}
+Furthermore, $ P(Ord(\tilde{\xi}) \geq 0) = p $ and $ P(Ord(\tilde{\xi}) <0) = 1-p $, where $ Ord $ is the order operator defined using the expected value operator (see \eqref{eq:os}).
+\end{definition} 
+
+
+
 
 \section{Conclusion}
 
