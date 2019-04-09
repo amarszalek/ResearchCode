@@ -4,10 +4,12 @@
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}
 \theoremstyle{theorem}
 \newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
 \modulolinenumbers[5]
 
 \DeclareMathOperator*{\dom}{d\omega}
@@ -379,8 +381,95 @@ An ordered fuzzy random variable $\tilde{\xi}$ has {\it normal distrubution with
 Furthermore, $ P(Ord(\tilde{\xi}) \geq 0) = p $ and $ P(Ord(\tilde{\xi}) <0) = 1-p $, where $ Ord $ is the order operator defined using the expected value operator (see \eqref{eq:os}).
 \end{definition} 
 
+It is worth notice that unlike the classical normal distribution, the parameters $ \tilde{\mu}, \tilde{\sigma}^2 $ are not a  expected value and a variance of $ \tilde{\xi} $ (neither fuzzy nor crisp). The fuzzy expected value and fuzzy variance of $ \tilde{\xi} $ are expressed by formulas
 
+\begin{align}
+\label{eq:30}
+\mathbb{E}[\tilde{\xi}]&=p\cdot(f_{\tilde{\mu}},g_{\tilde{\mu}})+(1-p)\cdot(g_{\tilde{\mu}},f_{\tilde{\mu}}).\\
+\label{eq:31}
+\mathrm{Var}[\tilde{\xi}]&=p(1-p)\cdot\left((f_{\tilde{\mu}},g_{\tilde{\mu}})-(g_{\tilde{\mu}},f_{\tilde{\mu}})\right)^2+p\cdot(f_{\tilde{\sigma}^2},g_{\tilde{\sigma}^2})+(1-p)\cdot (g_{\tilde{\sigma}^2},f_{\tilde{\sigma}^2})+\sigma^2.
+\end{align}
 
+In addition, estimators of parameters for the distribution defined in this way can be determined as follows. 
+\begin{definition}
+Let $\tilde{\xi}_1, \tilde{\xi}_2, \ldots, \tilde{\xi}_n $  be a random sample of ordered fuzzy random variables with normal distribution with parameters $ \tilde{\mu} $ , $ \tilde{\sigma}^2 $, $\sigma^2 $ and $ p $. Then
+\begin{itemize}
+\item Estimator of fuzzy expected value is defined as:
+\begin{equation}
+\hat{\mathbb{E}}[\tilde{\xi}]=\frac{1}{n}\sum\limits_{i=1}^n\tilde{\xi}_i.
+\end{equation}
+\item Estimator of fuzzy variance is defined as:
+\begin{equation}
+\label{eq:esty1}
+\hat{\mathrm{Var}}[\tilde{\xi}]=\frac{1}{n-1}\sum\limits_{i=1}^n\left(\tilde{\xi}_i-\hat{\mathbb{E}}[\tilde{\xi}]\right)^2.
+\end{equation}
+\item Estimator of parameter $\sigma^2$ is defined as:
+\begin{equation}
+\label{eq:esty2}
+\hat{\sigma}^2=\frac{1}{n-1}\sum\limits_{i=1}^n\left(\E(\tilde{\xi}_i)-\E(\hat{\mathbb{E}}[\tilde{\xi}])\right)^2.
+\end{equation}
+\item Estimator of probability $p$ is defined as:
+\begin{equation}
+\hat{p}=\dfrac{\#\{i\in\{1,2,\ldots,n\}\colon Ord(\tilde{\xi}_i)\geq 0\}}{n}.
+\end{equation}
+\item Estimators of parameter $\tilde{\mu}$ and $\tilde{\sigma}^2$ are defined as:
+\begin{equation}
+\hat{\tilde{\mu}}=\frac{1}{n}\sum\limits_{i=1}^n\tilde{\xi}_i^{*},
+\end{equation}
+\begin{equation}
+\hat{\tilde{\sigma}}^2 = \frac{1}{n-1}\sum\limits_{i=1}^n\left(\tilde{\xi}_i^{*}-\hat{\tilde{\mu}}\right)^2,
+\end{equation}
+where
+\begin{equation}
+\tilde{\xi}_i^{*}=\left\{
+\begin{array}{l}
+(f_{\tilde{\xi}_i},g_{\tilde{\xi}_i}),\ \text{gdy}\ Ord(\tilde{\xi}_i)\geq 0,\\
+(g_{\tilde{\xi}_i},f_{\tilde{\xi}_i}),\ \text{gdy}\ Ord(\tilde{\xi}_i)< 0.
+\end{array}
+\right.
+\end{equation}
+\end{itemize}
+\end{definition}
+
+In order to construct a ordered fuzzy random variable with a normal distribution with fuzzy parameters, the following lemma will be used.
+
+\begin{lemma}
+Let $\tilde{\mu}, \tilde{\sigma}^2\in\mathcal{O}$, $\sigma^2\in\mathbb{R_+}$ be fixed parameters such that $\tilde{\mu}> 0$, $\tilde{\sigma}^2>0$ (for all $t\in[0,1]$) and $Ord(\tilde{\mu})\geq 0$. Furthermore, let $\tilde{\eta}$ and $\tilde{\zeta}$ be ordered fuzzy random variables with stochastic processes $f_{\tilde{\eta}}$, $g_{\tilde{\eta}}$ and $f_{\tilde{\zeta}}$, $g_{\tilde{\zeta}}$ which are specified in following way
+\begin{align}
+f_{\tilde{\eta}}(t) = X_t\quad\wedge\quad g_{\tilde{\eta}}(t) = Y_t,\\
+f_{\tilde{\zeta}}(t) = S\quad\wedge\quad g_{\tilde{\zeta}}(t) = S,
+\end{align}
+where $X_t\sim\mathcal{N}\left(1,\dfrac{f_{\tilde{\sigma}^2}(t)}{f_{\tilde{\mu}}^2(t)}\right)$, $Y_t\sim\mathcal{N}\left(1,\dfrac{g_{\tilde{\sigma}^2}(t)}{g_{\tilde{\mu}}^2(t)}\right)$ for each $t\in[0,1]$ and $S\sim\mathcal{N}\left(0,\sigma^2\right)$. 
+
+Then, the ordered fuzzy random variable $\tilde{\xi}=\tilde{\mu}\cdot\tilde{\eta}+\tilde{\zeta}$ has normal distrubution with parameters $\tilde{\mu}_{\tilde{\xi}}=\tilde{\mu}$, $\tilde{\sigma}_{\tilde{\xi}}^2=\tilde{\sigma}^2$, $\sigma^2_{\xi}=\sigma^2$ and $p=1$.   
+\end{lemma}
+
+The proof of the above lemma implies directly from the properties of the real-valued random variables with a normal distribution such as affine property and property of sum of two normal random variables. Based on this lemma, an algorithm for generating ordered fuzzy pseudorandom numbers with a normal distribution with given parameters $\tilde{\mu}, \tilde{\sigma}^2\in\mathcal{O}$, $\sigma^2\in\mathbb{R}_+$ and $p\in[0,1]$ is presented below. For the purpose of numerical calculations, it was assumed that all ordered fuzzy numbers are determined in a discrete manner on the interval $[0, 1]$ using $T + 1$ points, $t \in \{0, 1,\ldots, T\}$.
+
+\begin{algorithm}
+  \KwIn{$\tilde{\mu}, \tilde{\sigma}^2\in\mathcal{O}$, $\sigma^2\in\mathbb{R}_+$, $p\in[0,1]$ }
+  \KwOut{$\tilde{\xi}\sim \mathcal{N}(\tilde{\mu},\tilde{\sigma}^2,\sigma^2,p)$}
+  \begin{description}
+\item[Step 1.] Calculate constant $C:= \big|\min\{\min\limits_{t\in\{0,1,\ldots,T\}}\{f_{\tilde{\mu}}(t)\},\min\limits_{t\in\{0,1,\ldots,T\}}\{g_{\tilde{\mu}}(t)\},0\}\big|.$
+\item[Step 2.] Create ordered fuzzy number $\tilde{\eta}:=\tilde{\mu}+C.$
+\item[Step 3.] Generate pseudorandom real number with normal distribution $S\sim\mathcal{N}\left(0,\sigma^2\right).$
+\item[Stpe 4.] Generate two sequence $X_t$ and $Y_t$ ($t\in\{0,1,\ldots,T\})$ of pseudorandom real numbers with following normal distributions
+\begin{align}
+&X_t\sim\mathcal{N}\left(1,\dfrac{f_{\tilde{\sigma}^2}(t)}{f_{\tilde{\eta}}^2(t)}\right),\nonumber\\
+&Y_t\sim\mathcal{N}\left(1,\dfrac{g_{\tilde{\sigma}^2}(t)}{g_{\tilde{\eta}}^2(t)}\right).\nonumber
+\end{align}
+\item[Step 5.] Generate pseudorandom real number with uniform distribution $r\sim \mathcal{U}[0,1].$
+\item[Krok 6.] \indent \\{\bf IF} $r<p$ {\bf THEN}\\ \indent  Create ordered fuzzy number $\tilde{\xi}$ such that
+$$(f_{\tilde{\xi}}(t), g_{\tilde{\xi}}(t)) = (X_t, Y_t)\cdot(f_{\tilde{\eta}}(t),g_{\tilde{\eta}}(t))+S.$$
+{\bf ELSE} \indent \\ \indent Create ordered fuzzy number $\tilde{\xi}$ such that
+$$(f_{\tilde{\xi}}(t), g_{\tilde{\xi}}(t)) = (X_t, Y_t)\cdot(g_{\tilde{\eta}}(t),f_{\tilde{\eta}}(t))+S.$$
+\item[Krok 7.] Return ordered fuzzy number $\tilde{\xi}:= \tilde{\xi} - C.$
+\end{description}
+\caption{}
+\label{algo:1}
+\end{algorithm}
+
+\paragraph{Example} 
 
 \section{Conclusion}
 
