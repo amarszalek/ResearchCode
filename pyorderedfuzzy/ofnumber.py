@@ -612,6 +612,12 @@ class OFNumber(object):
         res.branch_g = self.branch_f.copy()
         return res
 
+    def fnorm(self):
+        f = self.branch_f.fvalue_y
+        g = self.branch_g.fvalue_y
+        x = self.branch_f.domain_x
+        return np.sqrt(trapz(f**2, x)) + np.sqrt(trapz(g**2, x))
+
 
 # center of gravity operator
 def scog(ofn, alpha):

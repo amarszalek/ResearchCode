@@ -4,6 +4,8 @@ import numpy as np
 import copy
 import ofnumber as ofn
 import matplotlib as plt
+from scipy import signal
+from scipy import stats
 
 
 class OFCandle(ofn.OFNumber):
@@ -143,7 +145,7 @@ def compute_linear(price, volume, spread, params):
     s1, s2 = compute_params_s(new_price, new_spread, params['param_s'])
     c1, c2 = compute_params_c(new_price, new_spread, params['param_c'])
     field_a, field_b = compute_params_ab(new_price, new_spread, s1, s2)
-    if params['order'](price):
+    if params['order'](new_price):
         fx0 = np.min(new_price) - c1
         fx1 = s1
         gx1 = s2
@@ -164,7 +166,7 @@ def compute_gauss(price, volume, spread, params):
     c1, c2 = compute_params_c(new_price, new_spread, params['param_c'])
     field_a, field_b = compute_params_ab(new_price, new_spread, s1, s2)
     xmin = (1.0 / (params['dim'] - 1)) / 10
-    if params['order'](price):
+    if params['order'](new_price):
         mf = s1
         sf = (np.min(new_price) - c1 - s1) / (np.sqrt(-2 * np.log(xmin)))
         mg = s2
@@ -205,7 +207,7 @@ def compute_empirical(price, volume, spread, params):
 
     step1 = len(y1) / (dim - 1.0)
     step2 = len(y2) / (dim - 1.0)
-    if params['order'](price):
+    if params['order'](new_price):
         mask = np.arange(dim - 1) * step1
         yf = y1[mask.astype(int)]
         yf = np.append(yf, y1[-1])
@@ -301,3 +303,10 @@ def volatility(data):
 
 def open_close_order(x):
     return True if x[0] <= x[-1] else False
+
+
+def amplitude_order(x):
+    analytic_signal = signal.hilbert(x)
+    amplitude_envelope = np.abs(analytic_signal)
+    slope, intercept, r_value, p_value, std_err = stats.linregress(range(len(amplitude_envelope)), amplitude_envelope)
+    return True if slope >= 0 else False
