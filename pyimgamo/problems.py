@@ -1,4 +1,6 @@
 import numpy as np
+from numba import cfunc, types, carray
+import ctypes
 
 
 # base class for problem
@@ -22,6 +24,20 @@ class Problem(object):
         return solutions
 
 
+doublep = ctypes.POINTER(ctypes.c_double)
+c_sig = types.void(types.CPointer(types.double), types.CPointer(types.double), types.intc, types.intc, types.intc)
+
+
+@cfunc(c_sig)
+def _evaluate_one(in_, out, n, m, i):
+    solutions = carray(in_, (n, m))
+    out_array = carray(out, (n,))
+    if i == 0:
+        out_array[:] = np.sum(-10.0 * np.exp(-0.2 * np.sqrt(solutions[:, :-1] ** 2 + solutions[:, 1:] ** 2)), axis=1)[:]
+    if i == 1:
+        out_array[:] = np.sum(np.abs(solutions) ** 0.8 + 5.0 * np.sin(solutions ** 3), axis=1)[:]
+
+
 class Kursawe(Problem):
     def __init__(self, nvars=3, nobjs=2, bounds=((-5.0, 5.0), (-5.0, 5.0), (-5.0, 5.0)), need_repair=False):
         super(Kursawe, self).__init__(nvars, nobjs, bounds, need_repair)
@@ -36,6 +52,16 @@ class Kursawe(Problem):
             return np.sum(-10.0 * np.exp(-0.2 * np.sqrt(solutions[:, :-1]**2 + solutions[:, 1:]**2)), axis=1)
         if i == 1:
             return np.sum(np.abs(solutions)**0.8 + 5.0 * np.sin(solutions**3), axis=1)
+
+    def evaluate_one_c(self, solutions, i):
+        n, m = solutions.shape
+        evaluated = np.zeros(n)
+        addr_in = solutions.ctypes.data
+        addr_out = evaluated.ctypes.data
+        ptr_in = ctypes.cast(addr_in, doublep)
+        ptr_out = ctypes.cast(addr_out, doublep)
+        _evaluate_one.ctypes(ptr_in, ptr_out, n, m, i)
+        return evaluated
 
 
 class OFAR(Problem):

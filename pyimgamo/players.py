@@ -1,5 +1,5 @@
 import numpy as np
-from utils import  population_suppression
+from utils import population_suppression
 from operators import create_individual_uniform, hiper_mutate
 import copy
 
@@ -70,4 +70,115 @@ class ClonalSelection(Player):
             evaluation_count += np.size(new_eval)
             new_solutions[mask] = new
             new_solutions_eval[mask] = new_eval
-        return new_solutions, new_solutions_eval, evaluation_count
+        return new_solutions, new_solutions_eval, evaluation_count, self
+
+
+class SimulatedAnnealing(Player):
+    def __init__(self, player_id, temp=500, dec_step=0.99, mutate=hiper_mutate, mutate_args=(0.45, 0.9, 0.1)):
+        super(SimulatedAnnealing, self).__init__(player_id)
+        self.temp = temp
+        self.dec_step = dec_step
+        self.mutate = mutate
+        self.mutare_args = mutate_args
+
+    def optimize(self, solutions, solutions_eval, pattern, problem):
+        npop = solutions.shape[0]
+        evaluation_count = np.zeros(solutions_eval.shape[1])
+        new_solutions = copy.deepcopy(solutions)
+        new_solutions_eval = copy.deepcopy(solutions_eval)
+        args = (pattern, problem.bounds) + self.mutare_args
+
+        clones = np.apply_along_axis(self.mutate, 1, new_solutions, *args)
+        if problem.need_repair:
+            clones = problem.repair(clones)
+        clones_eval = problem.evaluate_one(clones, self.player_id)
+        evaluation_count[self.player_id] += npop
+        r = np.random.random(size=npop)
+        p = np.exp((new_solutions_eval[:, self.player_id] - clones_eval) / self.temp)
+        mask = r < p
+        new_solutions[mask, :] = clones[mask, :]
+        new_solutions_eval[mask, :] = problem.evaluate_all(new_solutions[mask, :])
+        evaluation_count += len(mask)
+        self.temp = self.temp * self.dec_step
+        return new_solutions, new_solutions_eval, evaluation_count, self
+
+
+class SimpleGeneticAlg(Player):
+    def __init__(self, player_id, pc=0.8, pm=0.05, dx=0.001):
+        super(SimpleGeneticAlg, self).__init__(player_id)
+        self.pc = pc
+        self.pm = pm
+        self.dx = dx
+
+    def optimize(self, solutions, solutions_eval, pattern, problem):
+        evaluation_count = np.zeros(solutions_eval.shape[1])
+        new_solutions = copy.deepcopy(solutions)
+        new_solutions_eval = copy.deepcopy(solutions_eval)
+        # bits, ndxs
+        a = np.array([bnd[0] for bnd in problem.bounds])
+        b = np.array([bnd[1] for bnd in problem.bounds])
+        bits, ndxs = self._nbits(self.dx, a, b)
+        # encode population
+        pop = self._encode(solutions, bits, ndxs, a)
+        # rulette
+        pop_eval = -new_solutions_eval[:, self.player_id]
+        minv = np.min(pop_eval)
+        if minv <= 0:
+            temp = pop_eval + np.abs(minv) + 1
+        else:
+            temp = pop_eval[:]
+        mask = np.random.choice(pop.shape[0], pop.shape[0], replace=True, p=temp / np.sum(temp))
+        pop = pop[mask, :]
+        # cross
+        for i in range(0, pop.shape[0], 2):
+            if i + 1 >= pop.shape[0]:
+                break
+            r = np.random.random()
+            if r < self.pc:
+                nb = np.random.randint(1, len(pop[i]))
+                temp = pop[i, :].copy()
+                pop[i, nb:] = pop[i + 1, nb:]
+                pop[i + 1, nb:] = temp[nb:]
+        # mutate
+        mask = np.tile(np.repeat(pattern, bits), (pop.shape[0], 1))
+        mask = np.logical_and(mask, np.random.random(size=pop.shape) < self.pm)
+        pop = pop ^ mask
+        # decode
+        new_solutions = self._decode(pop, bits, ndxs, a)
+        new_solutions_eval = problem.evaluate_all(new_solutions)
+        evaluation_count += len(new_solutions)
+        return new_solutions, new_solutions_eval, evaluation_count, self
+
+    @staticmethod
+    def _nbits(dx, a, b):
+        lens = np.abs(b - a)
+        lens_int = (np.ceil(lens / dx))
+        bits = np.array([int(a).bit_length() for a in lens_int], dtype=int)
+        ndxs = lens / (2 ** bits - 1)
+        return bits, ndxs
+
+    @staticmethod
+    def _encode(solutions, bits, ndxs, a):
+        def _tobinary(arr, bits):
+            binary = np.array([], dtype=int)
+            for x, b in zip(arr, bits):
+                binary = np.append(binary, np.array(list(np.binary_repr(x, width=b)), dtype=int))
+            return np.stack(binary)
+
+        shape = solutions.shape
+        pop = ((solutions - a) / ndxs).astype(int)
+        pop = np.apply_along_axis(_tobinary, 1, pop, bits)
+        return pop
+
+    @staticmethod
+    def _decode(population, bits, ndxs, a):
+        def _decode_ind(individual, bits, ndxs, a):
+            decode_individual = np.array([])
+            s = 0
+            for i in range(len(bits)):
+                temp = individual[s:s + bits[i]]
+                s += bits[i]
+                decode = np.sum(temp * (np.ones(bits[i]) * 2) ** np.arange(bits[i] - 1, -1, -1)) * ndxs[i] + a[i]
+                decode_individual = np.append(decode_individual, decode)
+            return decode_individual
+        return np.apply_along_axis(_decode_ind, 1, population, bits, ndxs, a)

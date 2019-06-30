@@ -58,6 +58,7 @@ class IMGAMO(object):
                 self.result.evaluation_count += res[i][2]
             self.populations = np.stack([res[i][0] for i in range(len(res))])
             self.populations_eval = np.stack([res[i][1] for i in range(len(res))])
+            self.players = [res[i][3] for i in range(len(res))]
             # get not dominated
             res = pool.map(get_not_dominated, self.populations_eval)
             not_dominated = np.vstack([pop[r] for pop, r in zip(self.populations, res)])
