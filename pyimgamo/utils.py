@@ -5,7 +5,7 @@ def assigning_gens(nvars, nobjs):
     while True:
         r = np.random.randint(0, nobjs, size=(nvars,))
         r2 = np.stack([r == i for i in range(nobjs)])
-        if not np.any(np.all(r2, axis=1)):
+        if not np.any(np.all(r2, axis=1)) and not np.any(np.all(np.logical_not(r2), axis=1)):
             break
     return r2
 

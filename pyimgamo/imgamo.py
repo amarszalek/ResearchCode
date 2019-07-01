@@ -157,6 +157,11 @@ class Result(object):
         ax.grid(True)
         ax.legend()
 
+    def plot_3d(self, ax, func_no1, func_no2, func_no3):
+        ax.scatter(self.evaluated_front[:, func_no1], self.evaluated_front[:, func_no2], self.evaluated_front[:, func_no3], marker='o', label='IMGAMO')
+        ax.grid(True)
+        ax.legend()
+
 
 def worker_optimize(player, solutions, solutions_eval, pattern, problem):
     return player.optimize(solutions, solutions_eval, pattern, problem)
