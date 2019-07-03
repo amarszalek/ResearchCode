@@ -12,13 +12,16 @@ class Problem(object):
         self.nobjs = nobjs
         self.bounds = bounds
         self.need_repair = need_repair
+        self.evaluation_count = np.zeros(nobjs)
 
     # evaluate all objective functions
     def evaluate_all(self, solutions):
+        #self.evaluation_count += solutions.shape[0]
         pass
 
     # evaluate selected objective function
     def evaluate_one(self, solutions, i):
+        #self.evaluation_count[i] += solutions.shape[0]
         pass
 
     def repair(self, solutions):
@@ -98,12 +101,12 @@ class DTLZ2(Problem):
 class DTLZ3(Problem):
     def __init__(self, nobjs=3, nvars=9, need_repair=False):
         nvars = nobjs + nvars
-        bounds = ((0, 1),) * nvars
+        bounds = ((0.001, 0.999),) * nvars
         super(DTLZ3, self).__init__(nvars, nobjs, bounds, need_repair)
 
     def evaluate_all(self, solutions):
         k = self.nvars - self.nobjs + 1
-        g = 100 * (k + np.sum(np.power(solutions[:, -k:] - 0.5, 2.0), axis=1))
+        g = 100 * (k + np.sum(np.power(solutions[:, -k:] - 0.5, 2.0)-np.cos(20*np.pi*(solutions[:, -k:] - 0.5)), axis=1))
         f = [1.0 + g.copy() for _ in range(self.nobjs)]
         for i in range(self.nobjs):
             for j in range(self.nobjs - 1 - i):
@@ -114,7 +117,7 @@ class DTLZ3(Problem):
 
     def evaluate_one(self, solutions, i):
         k = self.nvars - self.nobjs + 1
-        g = 100 * (k + np.sum(np.power(solutions[:, -k:] - 0.5, 2.0), axis=1))
+        g = 100 * (k + np.sum(np.power(solutions[:, -k:] - 0.5, 2.0)-np.cos(20*np.pi*(solutions[:, -k:] - 0.5)), axis=1))
         f = [1.0 + g.copy() for _ in range(self.nobjs)]
 
         for i in range(self.nobjs):

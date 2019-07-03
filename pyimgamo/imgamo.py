@@ -3,6 +3,7 @@ import numpy as np
 import copy
 import multiprocessing as mp
 from utils import assigning_gens, get_not_dominated, front_suppression
+from scipy.spatial.distance import cdist
 
 
 class Options(object):
@@ -18,7 +19,7 @@ class Options(object):
 
 
 class IMGAMO(object):
-    def __init__(self, problem, players, options):
+    def __init__(self, problem, players, options, ref_front=None):
         st = time.process_time()
         npop = options.population_size
         nvars = problem.nvars
@@ -32,7 +33,7 @@ class IMGAMO(object):
         self.problem = problem
         self.patterns = assigning_gens(nvars, nobjs)
         self.players = players
-        self.result = Result(options.front_max)
+        self.result = Result(options.front_max, nobjs, ref_front=ref_front)
         with mp.Pool(processes=problem.nobjs) as pool:
             pops = pool.starmap(worker_create, zip(players, (npop,)*nobjs, (nvars,)*nobjs, (bounds,)*nobjs))
             if problem.need_repair:
@@ -95,6 +96,7 @@ class IMGAMO(object):
                 print('Evaluation count: ', self.result.evaluation_count)
                 print('Front size: ', self.result.front_size)
                 print('Elapsed time:', time.process_time() - st)
+                print('Metrics', self.result.metrics)
                 print('')
 
             # stop condition
@@ -108,6 +110,7 @@ class IMGAMO(object):
             print('Evaluation count: ', self.result.evaluation_count)
             print('Front size: ', self.result.front_size)
             print('Elapsed time:', time.process_time() - st)
+            print('Metrics', self.result.metrics)
 
         pool.close()
         pool.join()
@@ -116,14 +119,16 @@ class IMGAMO(object):
 
 
 class Result(object):
-    def __init__(self, front_max):
+    def __init__(self, front_max, nobjs, ref_front=None):
         self.front_max = front_max
         self.front = []
         self.evaluated_front = []
         self.front_size = len(self.front)
-        self.evaluation_count = np.zeros(2)
+        self.evaluation_count = np.zeros(nobjs)
         self.elapsed_time = 0
         self.iteration = 0
+        self.ref_front = ref_front
+        self.metrics = {'gd': None, 'igd': None}
 
     def add_to_front(self, not_dominated, not_dominated_eval):
         if self.front_size == 0:
@@ -143,6 +148,9 @@ class Result(object):
             self.front = self.front[mask]
             self.evaluated_front = self.evaluated_front[mask]
             self.front_size = len(self.front)
+        if self.ref_front is not None:
+            self.metrics['gd'] = np.mean(np.min(cdist(self.evaluated_front, self.ref_front), axis=1))
+            self.metrics['igd'] = _igd(self.evaluated_front, self.ref_front)
 
     def summary(self):
         print('Iterations: ', self.iteration)
@@ -151,6 +159,7 @@ class Result(object):
         print('Front size: ', self.front_size)
         print('Time:', self.elapsed_time)
         print('Time per iteration:', self.elapsed_time/self.iteration)
+        print('Metrics', self.metrics)
 
     def plot_2d(self, ax, func_no1, func_no2):
         ax.scatter(self.evaluated_front[:, func_no1], self.evaluated_front[:, func_no2], marker='o', label='IMGAMO')
@@ -177,3 +186,22 @@ def worker_evaluate(problem, solutions):
 
 def worker_repair(problem, solutions):
     return problem.repair(solutions)
+
+
+def vectorized_cdist(A, B, func_dist):
+    u = np.repeat(A, B.shape[0], axis=0)
+    v = np.tile(B, (A.shape[0], 1))
+
+    D = func_dist(u, v)
+    M = np.reshape(D, (A.shape[0], B.shape[0]))
+    return M
+
+
+def _igd(fpred, ftrue):
+    N = np.max(ftrue, axis=0) - np.min(ftrue, axis=0)
+
+    def dist(A, B):
+        return np.sqrt(np.sum(np.square((A - B) / N), axis=1))
+    D = vectorized_cdist(ftrue, fpred, dist)
+    return np.mean(np.min(D, axis=1))
+

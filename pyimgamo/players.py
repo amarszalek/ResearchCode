@@ -2,6 +2,7 @@ import numpy as np
 from utils import population_suppression
 from operators import create_individual_uniform, hiper_mutate
 import copy
+from scipy.optimize import minimize, differential_evolution
 
 
 # base class for player
@@ -22,7 +23,7 @@ class Player(object):
         evaluation_count = np.zeros(solutions_eval.shape[1])
         new_solutions = solutions.copy()
         new_solutions_eval = solutions_eval.copy()
-        return new_solutions, new_solutions_eval, evaluation_count
+        return new_solutions, new_solutions_eval, evaluation_count, self
 
 
 class ClonalSelection(Player):
@@ -136,9 +137,13 @@ class SimpleGeneticAlg(Player):
             r = np.random.random()
             if r < self.pc:
                 nb = np.random.randint(1, len(pop[i]))
-                temp = pop[i, :].copy()
-                pop[i, nb:] = pop[i + 1, nb:]
-                pop[i + 1, nb:] = temp[nb:]
+                child1 = pop[i, :].copy()
+                child2 = pop[i+1, :].copy()
+                temp = child1[:].copy()
+                child1[nb:] = child2[nb:]
+                child2[nb:] = temp[nb:]
+                pop[i, np.repeat(pattern, bits)] = child1[np.repeat(pattern, bits)]
+                pop[i + 1, np.repeat(pattern, bits)] = child2[np.repeat(pattern, bits)]
         # mutate
         mask = np.tile(np.repeat(pattern, bits), (pop.shape[0], 1))
         mask = np.logical_and(mask, np.random.random(size=pop.shape) < self.pm)
@@ -182,3 +187,45 @@ class SimpleGeneticAlg(Player):
                 decode_individual = np.append(decode_individual, decode)
             return decode_individual
         return np.apply_along_axis(_decode_ind, 1, population, bits, ndxs, a)
+
+
+class ScipyMinimize(Player):
+    def __init__(self, player_id, method='L-BFGS-B', niter=1, strategy='best1bin'):
+        # method: L-BFGS-B, SLSQP, TNC, differential_evolution
+        super(ScipyMinimize, self).__init__(player_id)
+        self.method = method
+        self.options = {'maxiter': niter, 'disp': False}
+        self.niter = niter
+        self.strategy = strategy
+
+    def optimize(self, solutions, solutions_eval, pattern, problem):
+        def func(x, y):
+            xx = np.zeros((1, pattern.shape[0]))
+            xx[0, pattern] = x[:]
+            xx[0, np.logical_not(pattern)] = y[:]
+            return problem.evaluate_one(xx, self.player_id)[0]
+
+        evaluation_count = np.zeros(solutions_eval.shape[1])
+        new_solutions = copy.deepcopy(solutions)
+
+        bnds = []
+        for i in range(len(problem.bounds)):
+            if pattern[i]:
+                bnds.append(problem.bounds[i])
+
+        for i in range(new_solutions.shape[0]):
+            x = new_solutions[i, pattern].copy()
+            y = new_solutions[i, np.logical_not(pattern)].copy()
+            if self.method == 'differential_evolution':
+                res = differential_evolution(func, tuple(bnds), args=(y,), strategy=self.strategy, maxiter=self.niter,
+                                             init=new_solutions[:, pattern])
+            else:
+                res = minimize(func, x, (y,), method=self.method, bounds=tuple(bnds), options=self.options)
+            new_solutions[i, pattern] = res.x.copy()
+            new_solutions[i, np.logical_not(pattern)] = y.copy()
+            evaluation_count[self.player_id] += res.nfev
+
+        new_solutions_eval = problem.evaluate_all(new_solutions)
+        evaluation_count += new_solutions.shape[0]
+
+        return new_solutions, new_solutions_eval, evaluation_count, self
